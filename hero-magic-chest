@@ -1,0 +1,125 @@
+#!/bin/bash
+: '
+  Usage: hero-magic-chest [OPTIONS] ITEM
+  Options:
+'
+
+ASCII=(
+"     __________   "
+"    /\____;;___\  "
+"    | /         / "
+"    \`. ())oo() .  "
+"    |\(%()*^^()^\ "
+"   %| |-%-------| "
+"  % \ | %  ))   | "
+"  %  \|%________| "
+"    %%%%          "
+)
+
+TEXT=(
+  ""
+  "╔╦╗╔═╗╔═╗╦╔═╗  ┌─┐┬ ┬┌─┐┌─┐┌┬┐"
+  "║║║╠═╣║ ╦║║    │  ├─┤├┤ └─┐ │ "
+  "╩ ╩╩ ╩╚═╝╩╚═╝  └─┘┴ ┴└─┘└─┘ ┴ "
+  ""
+)
+
+showSplash(){
+  ART=(
+    "\n${ASCII[0]} ${TEXT[0]}"
+    "\n${ASCII[1]} ${TEXT[0]}"
+    "\n${ASCII[2]} ${TEXT[0]}"
+    "\n${ASCII[3]} ${TEXT[0]}"
+    "\n${ASCII[4]} ${TEXT[1]}"
+    "\n${ASCII[5]} ${TEXT[2]}"
+    "\n${ASCII[6]} ${TEXT[3]}"
+    "\n${ASCII[7]} ${TEXT[4]}"
+    "\n${ASCII[8]} ${TEXT[0]}"
+  )
+  echo -e "${ART[@]}"
+}
+
+
+downloadBinFile(){
+  ITEM=$1
+  echo "Downloading... $ITEM"
+  case $ITEM in
+    a!) ID=1tD0bs70jxfm4WILTxF-JJMcRxkpBC0Ry ;;
+    a+) ID=1u5lDkvzaQlRHn5RKTb_vv-JWLUK7g6Jk ;;
+    b)  ID=1TciNYFAj5O4pd3iXA8e1BmrrWGlIXYTk ;;
+    n)  ID=11MsYTYpaBBBUl9jbipxmVv8Dgq9cvoBq ;;
+    k)  ID=13dv6Kcn08vazUnZlSq3K1Sb89HYrWITV ;;
+    *)  ID="" 
+    ;;
+  esac
+
+  if [ $ID ]; then
+    curl -O --output-dir "/home/$USER/bin/" https://drive.google.com/u/0/uc?id=${ID}&export=download
+  fi
+}
+
+
+magicChest(){
+  echo "👕 $USER opens the magic chest and discovers some goodies inside..."
+  echo -e "
+  a) Magic Arrows: Basic, Fire, and Light arrows. 
+  b) Magic Bomb: Blow files to trash, blow up your trash. 
+  n) Magic marker: Blow files to trash, blow up your trash. 
+  k) Magic Key: Use k[2-9] to walk up directories # of times
+  +) Hero Aliases: Add hero-shortcuts
+  "
+
+  read -ep "What item would you like to grab? " ITEM
+  case $ITEM in
+    a|a+|a!) 
+      downloadBinFile "a+"
+      downloadBinFile "a!" 
+    ;;
+    b|b+) 
+      echo "Grabbing dem bombs."
+      downloadBinFile b 
+    ;;
+    n) 
+      echo "Grabbing the Magic Marker"
+      downloadBinFile n 
+    ;;
+    k) downloadBinFile k 
+    ;;
+    *) echo "Nothing Selected..."; magicChest
+    ;;
+  esac
+}
+
+showHelp(){
+  echo '
+    Usage: This is my usaged
+  '
+}
+
+# Transform long options to short ones
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    '--help')   set -- "$@" '-h'   ;;
+    *)          set -- "$@" "$arg" ;;
+  esac
+done
+
+# Parse short options
+while getopts ":h" opt
+do
+  case "$opt" in
+    h) showHelp
+      exit 1
+      ;;
+    *)  
+      ;;
+  esac
+done
+
+shift $((OPTIND-1)) # remove options from positional parameters
+
+if (( $OPTIND == 1 )); then
+  showSplash
+  magicChest $@
+fi

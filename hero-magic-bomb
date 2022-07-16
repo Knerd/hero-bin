@@ -1,0 +1,103 @@
+#!/bin/bash
+TRASH="/home/$USER/.local/share/Trash/"
+
+TEST
+
+ASCII=(
+  "        ,--! " 
+  "     __/   * "
+  "   ,d08b.    "
+  "   0088MM    "
+  "   '9MMP'    "
+)
+
+TEXT=(
+  ""
+  "╔╦╗╔═╗╔═╗╦╔═╗  ┌┐ ┌─┐┌┬┐┌┐ "
+  "║║║╠═╣║ ╦║║    ├┴┐│ ││││├┴┐"
+  "╩ ╩╩ ╩╚═╝╩╚═╝  └─┘└─┘┴ ┴└─┘"
+  ""
+)
+
+showSplash(){
+  ART=(
+    "\n${ASCII[0]} ${TEXT[0]}"
+    "\n${ASCII[1]} ${TEXT[1]}"
+    "\n${ASCII[2]} ${TEXT[2]}"
+    "\n${ASCII[3]} ${TEXT[3]}"
+    "\n${ASCII[4]} ${TEXT[4]}"
+  )
+  echo -e "${ART[@]}"
+}
+
+bombTrash(){
+  echo 💣 Bombing the Trash...; 
+  echo "💣 3..."
+  sleep 0.85 
+  echo "💣 2.."
+  sleep 0.85 
+  echo "💣 1!"
+  sleep 0.85 
+  echo "💥 BOOM!"
+  rm -rfi ${TRASH}*;
+}
+
+moveToTrash(){
+  FILE="$1"
+  if [ -f "$FILE" ]; then
+    mv "$FILE" "${TRASH}${FILE}"
+    echo "💥 BOOM!"
+  else
+    bombIsADud
+  fi
+}
+
+listTrash(){
+  ls -l ${TRASH}*; 
+}
+
+bombIsADud(){
+  sleep 1
+  echo "💣 ... its a dud (file not found)"; 
+  sleep 1 
+}
+
+bomb(){
+  echo "💣 $USER takes out a bomb..."; 
+  case $1 in
+    "i")
+      echo 💣 Inspecting...; 
+      listTrash
+      ;;
+
+    "file")
+      echo "💣 $USER bombed $FILE to the trash..."; 
+      moveToTrash "$2"
+      ;;
+
+    "--help")
+      sleep 1
+      echo "💣 Wait, $USER thinks it'd be a good idea to read the instructions before playing with explosives."; 
+      sleep 2
+      echo "💣 $USER opened the bomb manual and begins reading..."
+      sleep 2 
+
+      echo "💣 $ bomb/b[+,-,?] [FILE]
+      b       : Execute main exlosive. Targets trash.
+      b+ FILE : Move FILE to trash
+      b-      : List what's in the trash
+      b?      : Open bomb manual
+      "
+      sleep 7 
+      echo "👕 $USER: Good to Know."
+      # moveToTrash "$2"
+      ;;
+
+    *)
+      showSplash
+      bombTrash
+      ;;
+  esac
+}
+
+bomb $@

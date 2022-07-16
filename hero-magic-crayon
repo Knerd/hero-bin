@@ -1,0 +1,29 @@
+#!/bin/bash
+
+PAD="/home/$USER/hero-magic-crayon"
+
+removeLastCrayonMark(){
+  sed -i '$d' $PAD
+}
+
+crayonMark(){
+  if [ "$1" != "" ]; then
+    touch "$PAD"
+    echo "$@" >> "$PAD"
+    echo "️️$USER Wrote: 🖍️ $@!"
+  fi
+}
+
+magicCrayon(){
+  echo "🖍️ MAGIC CRAYON @️ ${PAD}"
+
+  case $1 in
+    "-d") removeLastCrayonMark ;;
+    *) crayonMark $@ ;;
+  esac
+
+
+  cat "$PAD"
+}
+
+magicCrayon $@
