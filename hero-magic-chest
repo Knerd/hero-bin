@@ -96,7 +96,7 @@ magicChest(){
     [a!]=$(isInstalled hero-fire-arrows)
     [n]=$(isInstalled hero-magic-marker)
     [k]=$(isInstalled hero-magic-key)
-    [aliases]=$(isInstalled /home/xopher/.oh-my-zsh/custom/aliases/hero-shortcuts.alias.zsh)
+    [aliases]=$(isInstalled /home/$USER/.oh-my-zsh/custom/aliases/hero-shortcuts.alias.zsh)
   )
 
   CHEST=(
@@ -128,7 +128,7 @@ magicChest(){
     ;;
     x) echo "$USER closes the chest."
     exit ;;
-    *) echo "Nothing Selected..."; magicChest
+    *) echo "Nothing Selected..."; 
     ;;
   esac
 }
