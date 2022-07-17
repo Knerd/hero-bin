@@ -4,16 +4,32 @@
   Options:
 '
 
+RED="\e[31m"
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+  
+cd /home/$USER/bin
+pwd
+
+declare -A EXISTS=(
+  [yes]="${GREEN}✓"
+  [no]="${RED}x"
+)
+
+isInstalled(){
+  [ -f $1 ] && echo ${EXISTS[yes]} || echo ${EXISTS[no]}
+}
+
 ASCII=(
-"     __________   "
-"    /\____;;___\  "
-"    | /         / "
-"    \`. ())oo() .  "
-"    |\(%()*^^()^\ "
-"   %| |-%-------| "
-"  % \ | %  ))   | "
-"  %  \|%________| "
-"    %%%%          "
+  "     __________   "
+  "    /\____;;___\  "
+  "    | /         / "
+  "    \`. ())oo() .  "
+  "    |\(%()*^^()^\ "
+  "   %| |-%-------| "
+  "  % \ | %  ))   | "
+  "  %  \|%________| "
+  "    %%%%          "
 )
 
 TEXT=(
@@ -42,32 +58,57 @@ showSplash(){
 
 downloadBinFile(){
   ITEM=$1
-  echo "Downloading... $ITEM"
   case $ITEM in
-    a!) ID=1tD0bs70jxfm4WILTxF-JJMcRxkpBC0Ry ;;
-    a+) ID=1u5lDkvzaQlRHn5RKTb_vv-JWLUK7g6Jk ;;
-    b)  ID=1TciNYFAj5O4pd3iXA8e1BmrrWGlIXYTk ;;
-    n)  ID=11MsYTYpaBBBUl9jbipxmVv8Dgq9cvoBq ;;
-    k)  ID=13dv6Kcn08vazUnZlSq3K1Sb89HYrWITV ;;
-    *)  ID="" 
+    "a!") FILE=hero-fire-arrows ;;
+    "a+") FILE=hero-light-arrow ;;
+    b)  
+    FILE=hero-magic-bomb 
+    export HEY_LISTEN="Use b to initiate the bomb!"
+    ;;
+    n)  FILE=hero-magic-marker ;;
+    k)  FILE=hero-magic-key ;;
+    *)  FILE="" 
     ;;
   esac
 
-  if [ $ID ]; then
-    curl -O --output-dir "/home/$USER/bin/" https://drive.google.com/u/0/uc?id=${ID}&export=download
+  if [ $FILE ]; then
+    echo "Downloading... $FILE"
+    curl -O https://raw.githubusercontent.com/Knerd/hero-bin/develop/${FILE}
+    chmod +x $FILE
+
   fi
 }
 
+doesFileExist(){
+  FILE=$1
+  if [ -f "/home/$USER/bin/$FILE" ]; then
+    return 1 
+  else
+    return 0 
+  fi
+}
 
 magicChest(){
   echo "👕 $USER opens the magic chest and discovers some goodies inside..."
-  echo -e "
-  a) Magic Arrows: Basic, Fire, and Light arrows. 
-  b) Magic Bomb: Blow files to trash, blow up your trash. 
-  n) Magic marker: Blow files to trash, blow up your trash. 
-  k) Magic Key: Use k[2-9] to walk up directories # of times
-  +) Hero Aliases: Add hero-shortcuts
-  "
+  declare -A CHECK=(
+    [b]=$(isInstalled hero-magic-bomb)
+    [a+]=$(isInstalled hero-light-arrow)
+    [a!]=$(isInstalled hero-fire-arrows)
+    [n]=$(isInstalled hero-magic-marker)
+    [k]=$(isInstalled hero-magic-key)
+    [aliases]=$(isInstalled /home/xopher/.oh-my-zsh/custom/aliases/hero-shortcuts.alias.zsh)
+  )
+
+  CHEST=(
+      "${CHECK[a!]} a!) 🏹🔥 Fire Arrows: Burn through your downloads one at a time.\n"${ENDCOLOR}
+      "${CHECK[a+]} a+) 🏹⚡ Bow of Light: Quickly create aliases to any location.\n"${ENDCOLOR}
+      "${CHECK[b]} b) 💣 Magic Bomb: Blow files to trash, blow up your trash.\n"${ENDCOLOR}
+      "${CHECK[n]} n) 🖍️ Magic Marker: Use n to quicly mark down snippets.\n"${ENDCOLOR}
+      "${CHECK[k]} k) 🗝️ Magic Key: Use k[2-9] to walk up directories # of times\n"${ENDCOLOR}
+      "${CHECK[aliases]} +) 💍 Hero Aliases: Add hero-shortcuts\n"${ENDCOLOR}
+      "  x) 🧰 Close the chest"
+  )
+  echo -e " ${CHEST[@]}"
 
   read -ep "What item would you like to grab? " ITEM
   case $ITEM in
@@ -85,6 +126,8 @@ magicChest(){
     ;;
     k) downloadBinFile k 
     ;;
+    x) echo "$USER closes the chest."
+    exit ;;
     *) echo "Nothing Selected..."; magicChest
     ;;
   esac
@@ -123,3 +166,5 @@ if (( $OPTIND == 1 )); then
   showSplash
   magicChest $@
 fi
+
+export HEY_LISTEN="HELLO"
